@@ -2,6 +2,7 @@
 %vistaroot='C:\Users\Hannah Craddock\Documents\MATLAB\packages';
 %addpath(vistaroot,'Vistalab')
 
+%********************************
 %% Video - fftn 
 %Load movie 
 count = 0;
@@ -17,6 +18,8 @@ Ny = size(frame, 1);
 %N_channels = size(frame, 3);
 Nt = count; 
 
+
+%********************************
 %% Save frames of video
 frames = zeros(Ny, Nx, Nt); 
 %fftn_frames = zeros(Ny, Nx, N_channels, Nt); 
@@ -30,6 +33,8 @@ while hasFrame(v)
     count = count + 1;
 end
 
+
+%********************************
 %% CSF
 %Apply function
 fsx = 90/1929;
@@ -51,6 +56,8 @@ imagesc(ftt,fxx,csf_fx_ft)
 xlabel('ftt')
 ylabel('fxx')
 
+
+%********************************
 %% Overlap & add strategy 
 
 count = 1;
