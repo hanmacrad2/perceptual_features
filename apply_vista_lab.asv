@@ -79,7 +79,7 @@ while frame_end < Nt
     
 end
 
-%Plot
+%plot
 plot(energy_output)
 xlabel('Time (s)')
 xlim([1,22])
