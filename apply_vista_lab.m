@@ -47,7 +47,10 @@ fst = 25 %Frames/sec
 estab = 0;
 fy0 = 0;
 
-[CSFet,csf_fx_ft,fxx,ftt]=spatio_temp_csf(fsx,fsy,fst,Nx,Ny,Nt,estab,fy0);
+chunk_nframes=50
+chunk_shift=fst;
+
+[CSFet,csf_fx_ft,fxx,ftt]=spatio_temp_csf(fsx,fsy,fst,Nx,Ny,chunk_nframes,estab,fy0);
 
 %Apply then to now
 csf_3d = then2now(CSFet,Nx);
@@ -64,18 +67,18 @@ ylabel('fxx');
 count = 1;
 energy_output = [];
 frame_start = 1;
-frame_end = 2*fst; 
+frame_end = chunk_nframes; 
 while frame_end < Nt
     %Power of fftn of video across 2 seconds worth of frames x contrast
     %sensitivity function
     meanX = mean(mean(frames(:,:, frame_start: frame_end), 1),2); 
     frames(:,:, frame_start: frame_end) = frames(:,:, frame_start: frame_end) - meanX;
-    energy_out_temp = abs(fftn(frames(:,:, frame_start: frame_end))).*csf_3d(:,:, frame_start:frame_end);
+    energy_out_temp = abs(fftshift(fftn(frames(:,:, frame_start: frame_end)))).*csf_3d;
     energy_output(count)= mean(mean(mean(energy_out_temp, 1), 2), 3); 
     %Params
-    frame_start = count*fst; %
+    frame_start = frame_start+ chunk_shift; %
     count = count + 1;
-    frame_end = frame_end + fst %Update count end  
+    frame_end = frame_end + chunk_shift %Update count end  
     
 end
 
