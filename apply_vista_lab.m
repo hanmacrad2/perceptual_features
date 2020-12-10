@@ -5,7 +5,8 @@
 %********************************
 %% Video - fftn 
 %Load movie 
-video_name = 'bathsong.mp4'; %bathsong
+%video_name = 'https://drive.google.com/drive/u/3/folders/1CmPqs8Zm_dLbP-K-5uFN5a3bl6X-OxmB/bathsong.mp4'
+%video_name = 'bathsong.mp4'; %bathsong
 v = VideoReader(video_name); 
 %Stats on video
 Nx = v.Width;
@@ -112,9 +113,10 @@ while frame_end < Nt
     meanX= mean(chunk(:));
     chunk=chunk-meanX;
     energy_out_temp = abs(fftshift(fftn(chunk))).*csf_3d;
-    energy_output(count)= mean(mean(mean(energy_out_temp, 1), 2), 3); 
+    %energy_output(count)= mean(mean(mean(energy_out_temp, 1), 2), 3); 
+    energy_output = [energy_output mean(mean(mean(energy_out_temp, 1), 2), 3);] ; 
     %Params
-    frame_start = frame_start+ chunk_shift_nframes; %
+    frame_start = frame_start + chunk_shift_nframes; %
     count = count + 1;
     frame_end = frame_end + chunk_shift_nframes %Update count end  
     
@@ -123,8 +125,7 @@ end
 %% Plot
 figure(2)
 subplot 211
-chunk_onsets_secs=(1:chunk_shift_nframes:(v.NumFrames-chunk_dur_nframes))/fst;
-plot(chunk_onsets_secs, energy_output)
+chunk_onsets_secs=(1:chunk_shift_nframes:(v.NumFrames-chunk_dur_nframes))/fst; 
 xlabel('Time (s)')
 xlim([1,22])
 ylabel('Amplitude of Energy')
