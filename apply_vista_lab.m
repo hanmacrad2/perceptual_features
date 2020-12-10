@@ -23,10 +23,22 @@ count = 1;
 while hasFrame(v)
     frame = readFrame(v);
     frame_grey = rgb2gray(frame);
+    %Determine mean 
+    %meanGrayLevel = mean2(frame_grey); % This is a double.
+    %Image_no_dc = double(frame_grey) - meanGrayLevel;
     frames(:,:, count) = frame_grey;
     count = count + 1;
 end
 
+%% *****************
+%fft
+f=fftn(frames);
+f2 = fftshift(f);
+plot(abs(mean(mean(f2,2),3)));
+ylim([0, 0.25])
+
+plot(abs(mean(mean(f,2),3)));
+ylim([0, 0.25])
 
 %********************************
 %% CSF
@@ -91,6 +103,7 @@ set(gca,'YScale','log')
 count = 1;
 energy_output = [];
 frame_start = 1;
+
 frame_end = chunk_dur_nframes; 
 while frame_end < Nt
     %Power of fftn of video across 2 seconds worth of frames x contrast
