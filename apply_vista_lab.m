@@ -30,10 +30,22 @@ v = VideoReader(video_name); %v2= VideoReader('hand_tools.mp4')
 while hasFrame(v)
     frame = readFrame(v);
     frame_grey = rgb2gray(frame);
+    %Determine mean 
+    %meanGrayLevel = mean2(frame_grey); % This is a double.
+    %Image_no_dc = double(frame_grey) - meanGrayLevel;
     frames(:,:, count) = frame_grey;
     count = count + 1;
 end
 
+%% *****************
+%fft
+f=fftn(frames);
+f2 = fftshift(f);
+plot(abs(mean(mean(f2,2),3)));
+ylim([0, 0.25])
+
+plot(abs(mean(mean(f,2),3)));
+ylim([0, 0.25])
 
 %********************************
 %% CSF
@@ -65,23 +77,32 @@ count = 1;
 energy_output = [];
 frame_start = 1;
 frame_end = 2*fst; 
+%Additional 
+fft_frames = fftn(frames);
+energy_out(1,1,1) = 0;
+
 while frame_end < Nt
     %Power of fftn of video across 2 seconds worth of frames x contrast
     %sensitivity function
-    meanX = mean(mean(frames(:,:, frame_start: frame_end), 1),2); 
-    frames(:,:, frame_start: frame_end) = frames(:,:, frame_start: frame_end) - meanX;
-    energy_out_temp = abs(fftn(frames(:,:, frame_start: frame_end))).*csf_3d(:,:, frame_start:frame_end);
+    %meanX = mean(mean(frames(:,:, frame_start: frame_end), 1),2); 
+    %frames(:,:, frame_start: frame_end) = frames(:,:, frame_start: frame_end) - meanX;
+    F = frames(:,:,frame_start:frame_end);
+    F = F - mean(F(:));
+    energy_out_temp = abs(fftshift(fftn(F))).*csf_3d(:,:, frame_start:frame_end);
+    %energy_out_temp = abs(fftshift(fft_frames(:,:,frame_start:frame_end))).*csf_3d(:,:, frame_start:frame_end);
     energy_output(count)= mean(mean(mean(energy_out_temp, 1), 2), 3); 
     %Params
-    frame_start = count*fst; %
-    count = count + 1;
+    frame_start = frame_start + fst; % Update start   
     frame_end = frame_end + fst %Update count end  
+    count = count + 1;
     
 end
 
+
 %Plot
+figure
 plot(energy_output)
 xlabel('Time (s)')
 xlim([1,22])
 ylabel('Amplitude of Energy')
-title(sprintf('CSF -', video_name));
+title(sprintf('CSF - Up Russell')) %, video_name));
