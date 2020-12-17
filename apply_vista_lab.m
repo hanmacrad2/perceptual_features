@@ -47,10 +47,17 @@ ylim([0, 0.25])
 width_degrees=90;
 %width_pixels=v.Width; % if video is full screen, this many pixels across 90 degrees
 width_pixels=1929; % if projector has this many pixels across and video is video width (i.e., 640) pixels across
-fsx = width_pixels/width_degrees;  % pixels/degree; video width in pix/ 90 degrees of visual angle
-fsy = fsx; % Assume square pixels
 fst = v.FrameRate %Frames/sec 
 
+% these two lines for testing graph
+% width_degrees=30;
+% fst=50;
+
+fsx = width_pixels/width_degrees;  % pixels/degree; video width in pix/ 90 degrees of visual angle
+fsy = fsx; % Assume square pixels
+
+
+%%
 % Nx = 640 %Number of columns in each frame
 % Ny = 360 %Number of rows in each frame
 % Nt = 563 %Number of frames 
@@ -95,6 +102,39 @@ ylabel('Temporal frequency (Hz)');
 set(gca,'XScale','log')
 set(gca,'YScale','log')
 
+figure(5)
+clf
+hold on
+freqs=[1,6,16, 22];
+leg={};
+for freqind=1:length(freqs)
+    [val ind]=min(abs(ftt-freqs(freqind)));
+    semilogx(fxx(321:end),csf_plane(321:end,ind));
+    leg{end+1}=num2str(ftt(ind));
+end;
+legend(leg)
+xlim([0.2,50])
+ylim([2,500])
+set(gca, 'YScale', 'log')
+set(gca, 'XScale', 'log')
+xlabel('Spatial frequency (cpd)');
+ylabel('Contrast sensitivity');
+
+xt = get(gca,'xtick');
+for j=1:length(xt)
+    % With log plots, MATLAB defaulted to exponential format, that is difficult for lay
+    % readerst to understand. In my case, I wanted integer format.
+    XTL{1,j} = num2str(xt(j),'%d');
+end
+xticklabels(XTL);
+
+yt = get(gca,'ytick');
+for j=1:length(yt)
+    % With log plots, MATLAB defaulted to exponential format, that is difficult for lay
+    % readerst to understand. In my case, I wanted integer format.
+    YTL{1,j} = num2str(yt(j),'%d');
+end
+yticklabels(YTL);
 
 
 %********************************
